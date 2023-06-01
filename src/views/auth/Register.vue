@@ -151,7 +151,7 @@ function onSubmit() {
             }
             else {
                 console.log(respondaData);
-                authStore.authenticate(respondaData.access_token, email.value);
+                authStore.authenticate(respondaData.access_token);
                 router.push({ name: 'home' });
                 flashMessageStore.setMessage('Account created with success', 'alert-success');
             }

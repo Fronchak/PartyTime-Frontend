@@ -1,12 +1,13 @@
 <script setup>
 import { ref } from 'vue';
-import { RouterLink, useRouter } from 'vue-router';
+import { RouterLink, useRouter, useRoute } from 'vue-router';
 import flashMessageStore from '../../stores/flash-message-store';
 import useAuthStore from '../../stores/auth-store';
 import { isBlank, isEmail } from '../../utils/string-utils';
 import { IS_VALID, IS_INVALID, BASE_URL, MESSAGE_DANGER, MESSAGE_SUCCESS } from '../../utils/constantes';
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 
 const email = ref();
@@ -64,16 +65,17 @@ function onSubmit() {
             }
         }).then((response) => response.json())
         .then((responseData) => {
-            console.log('no then');
-            console.log(responseData);
             if(responseData.status == 401) {
                 flashMessageStore.setMessage(responseData.message, MESSAGE_DANGER);
                 wasSubmited.value = false;
             }
             else {
-                authStore.authenticate(responseData.access_token, email.value);
+                authStore.authenticate(responseData.access_token);
                 flashMessageStore.setMessage('Login with success', MESSAGE_SUCCESS, 3000);
-                router.push({ name: 'home' });
+                const redirect = route.query.redirect || '/home';
+                console.log(route.query);
+                console.log(redirect);
+                router.push({ path: redirect });
             }
         })
         .catch((e) => {

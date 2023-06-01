@@ -1,10 +1,11 @@
 <script setup>
-import { RouterLink, useRouter } from 'vue-router';
+import { RouterLink, useRouter, useRoute } from 'vue-router';
 import useAuthStore from '../stores/auth-store';
 import flashMessageStore from '../stores/flash-message-store';
 
 const authStore = useAuthStore();
 const router = useRouter();
+const route = useRoute();
 
 const onLogout = () => {
   authStore.logout();
@@ -25,35 +26,42 @@ const onLogout = () => {
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <RouterLink class="nav-link" aria-current="page" to="/">Home</RouterLink>
+          <RouterLink class="nav-link" aria-current="page" to="/" :class="{ active: route.path === '/' }">Home</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" to="/About">About</RouterLink>
+          <RouterLink class="nav-link" to="/parties" :class="{ active: route.path === '/parties' }">Parties</RouterLink>
+        </li>
+        <li v-if="authStore.isAuthenticated" class="nav-item">
+          <RouterLink class="nav-link" to="/dashboard" :class="{ active: route.path === '/dashboard' }">Dashboard</RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink class="nav-link" to="/about" :class="{ active: route.path === '/about' }">About</RouterLink>
         </li>
       </ul>
-      <form class="d-flex" role="search">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <template v-if="authStore.isAuthenticated">
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/auth/login">{{ authStore.email }}</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" 
-                to="/auth/logout"
-                @click.prevent="onLogout"
-              >Logout</RouterLink>
-            </li>
-          </template>
-          <template v-else>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/auth/login">Login</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/auth/register">Register</RouterLink>
-            </li>
-          </template>
-        </ul>
-      </form>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 justify-content-end w-100">
+        <template v-if="authStore.isAuthenticated">
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'profile-update' }" :class="{ active: route.path === '/auth/update' }">Update profile</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'login' }" :class="{ active: route.path === '/auth/login' }">{{ authStore.email }}</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" 
+              to="/auth/logout"
+              @click.prevent="onLogout"
+            >Logout</RouterLink>
+          </li>
+        </template>
+        <template v-else>
+          <li class="nav-item">
+            <RouterLink class="nav-link" to="/auth/login" :class="{ active: route.path === '/auth/login' }">Login</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" to="/auth/register" :class="{ active: route.path === '/auth/register' }">Register</RouterLink>
+          </li>
+        </template>
+      </ul>
     </div>
   </div>
 </nav>
